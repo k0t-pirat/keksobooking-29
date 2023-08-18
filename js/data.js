@@ -29,8 +29,8 @@ const rawPhotos = [
 
 const generateAdId = createIdGenerator(1, 10);
 
-const generateAds = () => {
-  const generatedAds = [];
+const generateCards = () => {
+  const generatedCards = [];
   
   for (let i = 1; i <= ADS_COUNT; i++) {
     const location = {
@@ -38,7 +38,7 @@ const generateAds = () => {
       lng: getRandomInteger(MIN_LNG, MAX_LNG) / LAT_LNG_DEMULTIPLIER,
     }
     
-    generatedAds.push({
+    generatedCards.push({
       id: generateAdId(),
       author: {
         avatar: `img/avatars/user${addLeadingZero(getRandomInteger(1, 10))}.png`,
@@ -60,9 +60,9 @@ const generateAds = () => {
     });
   }
 
-  return generatedAds;
+  return generatedCards;
 };
 
-const ads = generateAds();
+const cards = generateCards();
 
-export {ads};
+export {cards};
