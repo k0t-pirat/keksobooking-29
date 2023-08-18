@@ -71,7 +71,13 @@
     <!-- Форма объявления -->
     <section class="notice">
       <h2 class="notice__title">Ваше объявление</h2>
-      <form class="ad-form" autocomplete="off">
+      <form
+        class="ad-form"
+        autocomplete="off"
+        method="post"
+        enctype="multipart/form-data"
+        action="https://29.javascript.pages.academy/keksobooking"
+      >
         <fieldset class="ad-form-header">
           <legend class="ad-form-header__title">Ваша фотография (для карты)</legend>
           <div class="ad-form-header__upload">
@@ -87,7 +93,18 @@
         </fieldset>
         <fieldset class="ad-form__element ad-form__element--wide">
           <label class="ad-form__label" for="title">Заголовок объявления</label>
-          <input id="title" name="title" type="text" placeholder="Милая, уютная квартирка в центре Токио">
+          <input
+            id="title"
+            name="title"
+            type="text"
+            placeholder="Милая, уютная квартирка в центре Токио"
+            data-pristine-minlength="30"
+            data-pristine-maxlength="100"
+            data-pristine-minlength-message="Заголовок не может быть короче 30 символов"
+            data-pristine-maxlength-message="Заголовок не может быть длиннее 100 символов"
+            data-pristine-required
+            data-pristine-required-message="Это поле обязательное"
+          >
         </fieldset>
         <fieldset class="ad-form__element ad-form__element--wide">
           <label class="ad-form__label" for="address">Адрес (координаты)</label>
@@ -105,7 +122,16 @@
         </fieldset>
         <fieldset class="ad-form__element">
           <label class="ad-form__label" for="price">Цена за ночь, руб.</label>
-          <input id="price" name="price" type="number" placeholder="5000">
+          <input
+            id="price"
+            name="price"
+            type="number"
+            placeholder="5000"
+            data-pristine-max="100000"
+            data-pristine-max-message="Цена не может быть больше 100000"
+            required
+            data-pristine-required-message="Введите корректное число"
+          >
           <div class="ad-form__slider"></div>
         </fieldset>
         <fieldset class="ad-form__element ad-form__element--time">
@@ -229,6 +255,7 @@
     </div>
   </template>
 
+  <script src="./vendor/pristine/pristine.min.js"></script>
   <script src="./js/main.js" type="module"></script>
 </body>
 </html>

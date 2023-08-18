@@ -1,3 +1,5 @@
+import './validate.js';
+
 const formNode = document.querySelector('.ad-form');
 const formHeaderNode = formNode.querySelector('.ad-form-header');
 const formFieldsetNodes = formNode.querySelectorAll('.ad-form__element');
@@ -33,5 +35,6 @@ const enableForm = () => {
     filterNode.removeAttribute('disabled');
   }); 
 };
+
 
 export {disableForm, enableForm};
