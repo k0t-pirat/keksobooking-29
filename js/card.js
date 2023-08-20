@@ -8,11 +8,12 @@ const offerTypesMapper = {
   hotel: 'Отель',
 };
 
-const mainNode = document.querySelector('#map-canvas');
 const cardTemplate = document.querySelector('#card').content.querySelector('.popup');
-let cardNodes = [];
 
-cards.forEach(({offer, author}) => {
+
+const renderCard = (id) => {
+  const currentCard = cards.find((card) => card.id === id);
+  const {offer, author} = currentCard;
   const {title, address, price, type, rooms, guests, checkin, checkout, features, description, photos} = offer;
   const cardNode = cardTemplate.cloneNode(true);
 
@@ -49,7 +50,7 @@ cards.forEach(({offer, author}) => {
   photosContainer.appendChild(photosFragment);
   cardNode.querySelector('.popup__avatar').src = author.avatar;
 
-  cardNodes.push(cardNode);
-});
+  return cardNode;
+};
 
-mainNode.appendChild(cardNodes[0]);
+export {renderCard};

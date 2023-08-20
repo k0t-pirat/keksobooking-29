@@ -1,8 +1,13 @@
-import './validate.js';
+import {validatePrice, getPriceRange, setCurrentRealtyType}  from './validate.js';
 
 const formNode = document.querySelector('.ad-form');
 const formHeaderNode = formNode.querySelector('.ad-form-header');
 const formFieldsetNodes = formNode.querySelectorAll('.ad-form__element');
+
+const addressNode = formNode.querySelector('#address');
+const priceSliderNode = formNode.querySelector('.ad-form__slider');
+const realtyTypeNode = formNode.querySelector('#type');
+const priceNode = formNode.querySelector('#price');
 
 const filterFormNode = document.querySelector('.map__filters');
 const featuresFilterNode = filterFormNode.querySelector('.map__features');
@@ -19,7 +24,11 @@ const disableForm = () => {
   featuresFilterNode.setAttribute('disabled', '');
   filterNodes.forEach((filterNode) => {
     filterNode.setAttribute('disabled', '');
-  }); 
+  });
+
+  if (priceSliderNode.noUiSlider) {
+    priceSliderNode.noUiSlider.destroy();
+  }
 };
 
 const enableForm = () => {
@@ -34,7 +43,41 @@ const enableForm = () => {
   filterNodes.forEach((filterNode) => {
     filterNode.removeAttribute('disabled');
   }); 
+
+  noUiSlider.create(priceSliderNode, {
+    range: getPriceRange(),
+    start: 0,
+    step: 1,
+    connect: 'lower',
+    format: {
+      to: (value) => Math.round(value),
+      from: (value) => Number(value),
+    }
+  });
+
+  priceSliderNode.noUiSlider.on('update', () => {
+    priceNode.value = priceSliderNode.noUiSlider.get();
+  });
+  // priceNode.addEventListener('change', (evt) => {
+  //   priceSliderNode.noUiSlider.set(evt.target.value);
+  // });
+  validatePrice(onPriceValidate);
 };
 
+const setAddress = (coord) => {
+  addressNode.value = `${coord.lat}, ${coord.lng}`;
+};
 
-export {disableForm, enableForm};
+const onPriceValidate = () => {
+  priceSliderNode.noUiSlider.updateOptions({
+    range: getPriceRange(),
+  });
+};
+
+realtyTypeNode.addEventListener('change', (evt) => {
+  priceNode.min = evt.target.value;
+  setCurrentRealtyType(evt.target.value);
+  validatePrice(onPriceValidate);
+});
+
+export {disableForm, enableForm, setAddress};
