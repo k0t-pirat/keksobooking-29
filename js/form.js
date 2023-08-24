@@ -1,8 +1,13 @@
-import {validatePrice, getPriceRange, setCurrentRealtyType}  from './validate.js';
+import { requestData } from './api.js';
+import { showError, showSuccess } from './alert.js';
+import {validatePrice, getPriceRange, setCurrentRealtyType, pristine}  from './validate.js';
+
+const DEFAULT_MIN_PRICE = 1000;
 
 const formNode = document.querySelector('.ad-form');
 const formHeaderNode = formNode.querySelector('.ad-form-header');
 const formFieldsetNodes = formNode.querySelectorAll('.ad-form__element');
+const formSubmitNode = formNode.querySelector('.ad-form__submit');
 
 const addressNode = formNode.querySelector('#address');
 const priceSliderNode = formNode.querySelector('.ad-form__slider');
@@ -78,6 +83,49 @@ realtyTypeNode.addEventListener('change', (evt) => {
   priceNode.min = evt.target.value;
   setCurrentRealtyType(evt.target.value);
   validatePrice(onPriceValidate);
+});
+
+const blockSubmitButton = () => {
+  formSubmitNode.disabled = true;
+  formSubmitNode.textContent = 'Публикуется...';
+};
+const unblockSubmitButton = () => {
+  formSubmitNode.disabled = false;
+  formSubmitNode.textContent = 'Опубликовать';
+};
+
+const resetForm = () => {
+  pristine.reset();
+  priceSliderNode.noUiSlider.set(DEFAULT_MIN_PRICE);
+  priceNode.value = '';
+  setCurrentRealtyType('flat');
+  validatePrice(onPriceValidate);
+}
+
+formNode.addEventListener('reset', () => {
+  resetForm()
+});
+
+formNode.addEventListener('submit', (evt) => {
+  evt.preventDefault();
+  pristine.validate();
+  const formData = new FormData(evt.target);
+
+  requestData({
+    url: '',
+    method: 'POST',
+    data: formData,
+    onStart: blockSubmitButton,
+    onSuccess: () => {
+      showSuccess();
+      formNode.reset();
+      resetForm();
+    },
+    onError: () => {
+      showError();
+    },
+    onEnd: unblockSubmitButton,
+  });
 });
 
 export {disableForm, enableForm, setAddress};

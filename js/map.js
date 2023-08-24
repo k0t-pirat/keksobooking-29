@@ -1,26 +1,15 @@
-import { cards } from "./data.js";
-
 const TILE_LAYER = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 const COPYRIGHT = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 const ZOOM = 12;
+const Marker = {
+  SIZE_MAIN: 52,
+  SIZE_COMMON: 40,
+  URL_MAIN: './img/main-pin.svg',
+  URL_COMMON: './img/pin.svg',
+};
 
 const mapNode = document.querySelector('#map-canvas');
 let map = null;
-
-const mapPinIconConfig = {
-  url: './img/main-pin.svg',
-  width: 52,
-  height: 52,
-  anchorX: 26,
-  anchorY: 52,
-};
-const pinIconConfig = {
-  url: './img/pin.svg',
-  width: 52,
-  height: 52,
-  anchorX: 26,
-  anchorY: 52,
-};
 
 const tokyoCityCenter = {
   lat: 35.652832,
@@ -30,6 +19,17 @@ const mainPinCoord = {
   lat: 35.652832,
   lng: 139.839478,
 };
+
+const mainPinIcon = L.icon({
+  iconUrl: Marker.URL_MAIN,
+  iconSize: [Marker.SIZE_MAIN, Marker.SIZE_MAIN],
+  iconAnchor: [Marker.SIZE_MAIN / 2, Marker.SIZE_MAIN],
+});
+const pinIcon = L.icon({
+  iconUrl: Marker.URL_COMMON,
+  iconSize: [Marker.SIZE_COMMON, Marker.SIZE_COMMON],
+  iconAnchor: [Marker.SIZE_COMMON / 2, Marker.SIZE_COMMON],
+});
 
 const initMap = (onMapLoad) => {
   map = L.map(mapNode)
@@ -44,13 +44,6 @@ const initMap = (onMapLoad) => {
 };
 
 const initMainPin = (onMainPinMoveend) => {
-  const {url, width, height, anchorX, anchorY} = mapPinIconConfig;
-  const mainPinIcon = L.icon({
-    iconUrl: url,
-    iconSize: [width, height],
-    iconAnchor: [anchorX, anchorY],
-  });
-  
   const mainPinMarker = L.marker(mainPinCoord, {
     draggable: true,
     icon: mainPinIcon,
@@ -67,25 +60,12 @@ const initMainPin = (onMainPinMoveend) => {
   mainPinMarker.addTo(map);
 };
 
-const {url, width, height, anchorX, anchorY} = pinIconConfig;
-const pinIcon = L.icon({
-  iconUrl: url,
-  iconSize: [width, height],
-  iconAnchor: [anchorX, anchorY],
-});
-
-const initPins = (renderCard) => {
-  cards.forEach(({location, id}) => {
-    const {lat, lng} = location;
-    const marker = L.marker({
-      lat,
-      lng,
-    }, {
-      icon: pinIcon,
-    });
-
+const initPins = (renderCard, cards) => {
+  cards.forEach((card) => {
+    const {lat, lng} = card.location;
+    const marker = L.marker({ lat, lng }, { icon: pinIcon });
     
-    marker.addTo(map).bindPopup(renderCard(id));
+    marker.addTo(map).bindPopup(renderCard(card));
   });
 };
 

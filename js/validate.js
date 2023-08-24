@@ -41,12 +41,9 @@ pristine.addValidator(roomNumberNode, validateRooms, ROOMS_ERROR_MESSAGE);
 pristine.addValidator(capacityNode, validateRooms, ROOMS_ERROR_MESSAGE);
 pristine.addValidator(priceNode, validateMinPrice, getMinPriceMessage);
 
-const onFormSubmit = (evt) => {
-  evt.preventDefault();
-  pristine.validate();
-};
+
 const onRoomsFieldChange = (evt) => {
-  pristine.validate(evt.target);
+  pristine.validate([roomNumberNode, capacityNode]);
 };
 
 const validatePrice = (onPriceValidate) => {
@@ -57,7 +54,7 @@ const validatePrice = (onPriceValidate) => {
   }
 };
 
-formNode.addEventListener('submit', onFormSubmit);
+// formNode.addEventListener('submit', onFormSubmit);
 roomNumberNode.addEventListener('change', onRoomsFieldChange);
 capacityNode.addEventListener('change', onRoomsFieldChange);
 
@@ -76,4 +73,4 @@ const setCurrentRealtyType = (type) => {
   currentRealtyType = type;
 }
 
-export {validatePrice, getPriceRange, setCurrentRealtyType};
+export {validatePrice, getPriceRange, setCurrentRealtyType, pristine};
