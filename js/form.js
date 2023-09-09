@@ -3,6 +3,10 @@ import { showError, showSuccess } from './alert.js';
 import {validatePrice, getPriceRange, setCurrentRealtyType, pristine}  from './validate.js';
 
 const DEFAULT_MIN_PRICE = 1000;
+const DEFAULT_HOUSING_VALUE = 'any';
+const HOUSING_TYPE_PREFIX = 'housing';
+
+let filter = {};
 
 const formNode = document.querySelector('.ad-form');
 const formHeaderNode = formNode.querySelector('.ad-form-header');
@@ -17,6 +21,20 @@ const priceNode = formNode.querySelector('#price');
 const filterFormNode = document.querySelector('.map__filters');
 const featuresFilterNode = filterFormNode.querySelector('.map__features');
 const filterNodes = filterFormNode.querySelectorAll('.map__filter');
+const featureNodes = filterFormNode.querySelector('.map__features').querySelectorAll('input');
+
+const startFilterChangeHandler = (onChangeFilter) => {
+  filterFormNode.addEventListener('change', (evt) => {
+    if (evt.target.type === 'checkbox') {
+      filter[`features-${evt.target.value}`] = evt.target.checked ? evt.target.value : '';
+    } else {
+      const filterValue = evt.target.value === DEFAULT_HOUSING_VALUE ? '' : evt.target.value;
+      const currentFilterType = evt.target.name.replace(`${HOUSING_TYPE_PREFIX}-`, '');
+      filter[currentFilterType] = filterValue;
+    }
+    onChangeFilter(filter);
+  });
+};
 
 const disableForm = () => {
   formNode.classList.add('ad-form--disabled');
@@ -36,7 +54,7 @@ const disableForm = () => {
   }
 };
 
-const enableForm = () => {
+const enableForm = (onChangeFilter) => {
   formNode.classList.remove('ad-form--disabled');
   formHeaderNode.removeAttribute('disabled');
   formFieldsetNodes.forEach((fieldsetNode) => {
@@ -67,6 +85,36 @@ const enableForm = () => {
   //   priceSliderNode.noUiSlider.set(evt.target.value);
   // });
   validatePrice(onPriceValidate);
+  startFilterChangeHandler(onChangeFilter);
+
+  formNode.addEventListener('reset', () => {
+    resetForm();
+    resetFilters();
+    filter = {};
+    onChangeFilter(filter);
+  });
+  
+  formNode.addEventListener('submit', (evt) => {
+    evt.preventDefault();
+    pristine.validate();
+    const formData = new FormData(evt.target);
+  
+    requestData({
+      url: '',
+      method: 'POST',
+      data: formData,
+      onStart: blockSubmitButton,
+      onSuccess: () => {
+        showSuccess();
+        formNode.reset();
+        resetForm();
+      },
+      onError: () => {
+        showError();
+      },
+      onEnd: unblockSubmitButton,
+    });
+  });
 };
 
 const setAddress = (coord) => {
@@ -94,38 +142,21 @@ const unblockSubmitButton = () => {
   formSubmitNode.textContent = 'Опубликовать';
 };
 
+const resetFilters = () => {
+  filterNodes.forEach((filterNode) => {
+    filterNode.value = DEFAULT_HOUSING_VALUE;
+  });
+  featureNodes.forEach((featureNode) => {
+    featureNode.checked = false;
+  });
+};
+
 const resetForm = () => {
   pristine.reset();
   priceSliderNode.noUiSlider.set(DEFAULT_MIN_PRICE);
   priceNode.value = '';
   setCurrentRealtyType('flat');
   validatePrice(onPriceValidate);
-}
-
-formNode.addEventListener('reset', () => {
-  resetForm()
-});
-
-formNode.addEventListener('submit', (evt) => {
-  evt.preventDefault();
-  pristine.validate();
-  const formData = new FormData(evt.target);
-
-  requestData({
-    url: '',
-    method: 'POST',
-    data: formData,
-    onStart: blockSubmitButton,
-    onSuccess: () => {
-      showSuccess();
-      formNode.reset();
-      resetForm();
-    },
-    onError: () => {
-      showError();
-    },
-    onEnd: unblockSubmitButton,
-  });
-});
+};
 
 export {disableForm, enableForm, setAddress};

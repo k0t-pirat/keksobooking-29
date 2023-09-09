@@ -1,3 +1,4 @@
+const MAX_MARKERS_COUNT = 10;
 const TILE_LAYER = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 const COPYRIGHT = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 const ZOOM = 12;
@@ -10,6 +11,7 @@ const Marker = {
 
 const mapNode = document.querySelector('#map-canvas');
 let map = null;
+let markers = [];
 
 const tokyoCityCenter = {
   lat: 35.652832,
@@ -61,11 +63,17 @@ const initMainPin = (onMainPinMoveend) => {
 };
 
 const initPins = (renderCard, cards) => {
+  markers.forEach((marker) => {
+    marker.removeFrom(map);
+  });
+  
   cards.forEach((card) => {
+  // cards.slice(0, MAX_MARKERS_COUNT).forEach((card) => {
     const {lat, lng} = card.location;
     const marker = L.marker({ lat, lng }, { icon: pinIcon });
     
     marker.addTo(map).bindPopup(renderCard(card));
+    markers.push(marker);
   });
 };
 
