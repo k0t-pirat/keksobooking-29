@@ -67,8 +67,8 @@ const initPins = (renderCard, cards) => {
     marker.removeFrom(map);
   });
   
-  cards.forEach((card) => {
-  // cards.slice(0, MAX_MARKERS_COUNT).forEach((card) => {
+  // cards.forEach((card) => {
+  cards.slice(0, MAX_MARKERS_COUNT).forEach((card) => {
     const {lat, lng} = card.location;
     const marker = L.marker({ lat, lng }, { icon: pinIcon });
     

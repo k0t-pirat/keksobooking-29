@@ -3,9 +3,10 @@ import {initMap, initMainPin, initPins} from './map.js';
 import {disableForm, enableForm, setAddress} from './form.js';
 import {requestData} from './api.js';
 import {showAlert} from './alert.js';
-import {getFilteredData} from './util.js';
+import {debounce, getFilteredData} from './util.js';
 
 const LOAD_ERROR_MESSAGE = 'Не удалось загрузить данные';
+const RENDER_TIMEOUT = 500;
 
 // const handleMapLoad = (latLng) => {
 //   setAddress(latLng);
@@ -18,9 +19,9 @@ requestData({
   method: 'GET',
   onSuccess: (data) => {
     console.log('data', data);
-    const handleFilterChange = (filter) => {
+    const handleFilterChange = debounce((filter) => {
       initPins(renderCard, getFilteredData(data, filter));
-    };
+    }, RENDER_TIMEOUT);
 
     enableForm(handleFilterChange);
     initMap(setAddress);

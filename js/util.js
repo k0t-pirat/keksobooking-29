@@ -34,4 +34,12 @@ const getFilteredData = (data, filter) => {
   return filteredData;
 };
 
-export {getFilteredData};
+const debounce = (callback, timeoutDelay) => {
+  let timeoutId;
+  return (...rest) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => callback.apply(this, rest), timeoutDelay);
+  };
+};
+
+export {getFilteredData, debounce};
